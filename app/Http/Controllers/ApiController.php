@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Journal;
+use App\Models\Project;
 use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\TeamMember;
@@ -38,5 +39,26 @@ class ApiController extends Controller
     public function team()
     {
         return response()->json(TeamMember::where('is_active', true)->orderBy('sort_order')->get());
+    }
+
+    public function projects()
+    {
+        return response()->json(
+            Project::with('category')
+                ->where('status', 'published')
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn($p) => [
+                    'id'           => $p->id,
+                    'title'        => $p->title,
+                    'slug'         => $p->slug,
+                    'client'       => $p->client,
+                    'project_year' => $p->project_year,
+                    'cover_image'  => $p->cover_image,
+                    'is_featured'  => $p->is_featured,
+                    'category'     => $p->category ? ['name' => $p->category->name, 'color' => $p->category->color] : null,
+                ])
+        );
     }
 }

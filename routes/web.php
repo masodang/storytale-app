@@ -20,10 +20,11 @@ Route::get('/journal', [PageController::class, 'journal']);
 Route::get('/services',[PageController::class, 'services']);
 
 // ── Public API ────────────────────────────────────────────
-Route::get('/api/journals', [ApiController::class, 'journals']);
-Route::get('/api/settings', [ApiController::class, 'settings']);
-Route::get('/api/services', [ApiController::class, 'services']);
-Route::get('/api/team',     [ApiController::class, 'team']);
+Route::get('/api/journals',  [ApiController::class, 'journals']);
+Route::get('/api/settings',  [ApiController::class, 'settings']);
+Route::get('/api/services',  [ApiController::class, 'services']);
+Route::get('/api/team',      [ApiController::class, 'team']);
+Route::get('/api/projects',  [ApiController::class, 'projects']);
 
 // ── Admin auth ────────────────────────────────────────────
 Route::get('/admin/login',  [AuthController::class, 'showLogin'])->name('admin.login');

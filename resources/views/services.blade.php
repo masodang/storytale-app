@@ -128,6 +128,33 @@
     </div>
   </section>
 
+  <!-- WORK HIGHLIGHT -->
+  <section class="bg-[#0A0A0A] border-b-4 border-[#FFE500] pt-20 pb-28 lg:pt-28">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+
+      <div class="flex items-end justify-between border-b-4 border-[rgba(255,229,0,0.1)] pb-6 mb-10">
+        <div>
+          <span class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-40">§ Our Work</span>
+          <h2 class="font-brutal text-[clamp(3rem,7vw,8rem)] text-[#FFE500] leading-none tracking-tight uppercase mt-1">Selected<br/>Projects</h2>
+        </div>
+        <a href="/work" class="hidden lg:inline-block bg-[#FFE500] text-[#0A0A0A] font-body font-bold text-xs uppercase tracking-widest px-5 py-3 border-2 border-[#FFE500] shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-150 no-underline pb-3">View All Work →</a>
+      </div>
+
+      <div id="work-highlight-grid" class="grid grid-cols-1 md:grid-cols-3 gap-[3px]">
+        <!-- filled by JS -->
+        <div style="grid-column:1/-1;padding:3rem 0;text-align:center;">
+          <span class="font-brutal text-[#FFE500] text-2xl tracking-widest opacity-20">Loading…</span>
+        </div>
+      </div>
+
+      <div class="mt-8 lg:hidden">
+        <a href="/work" class="block text-center bg-[#FFE500] text-[#0A0A0A] font-body font-bold text-sm uppercase tracking-widest px-8 py-4 border-2 border-[#FFE500] no-underline">View All Work →</a>
+      </div>
+
+    </div>
+  </section>
+
+
   <!-- CTA -->
   <section class="bg-[#0A0A0A] py-20 lg:py-28">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
@@ -192,6 +219,47 @@
         gsap.from('.service-card',{y:60,opacity:0,stagger:.07,duration:.7,ease:'power3.out',scrollTrigger:{trigger:'#services-grid',start:'top 85%',once:true}});
       }).catch(()=>{grid.innerHTML='';FALLBACK.forEach((s,i)=>grid.appendChild(buildCard(s,i)));});
     }
+
+    // Work highlight — 3 featured projects
+    function loadWorkHighlight(){
+      const grid=document.getElementById('work-highlight-grid');
+      fetch('/api/projects').then(r=>r.json()).then(projects=>{
+        const featured=projects.filter(p=>p.is_featured).slice(0,3);
+        const display=(featured.length>=3?featured:projects.slice(0,3));
+        if(!display.length){grid.innerHTML='';return;}
+        grid.innerHTML='';
+        display.forEach(p=>{
+          const cat=p.category||{};
+          const color=cat.color||'#FFE500';
+          const hasCover=p.cover_image&&p.cover_image.trim();
+          const card=document.createElement('a');
+          card.href='/work/'+p.slug;
+          card.className='block border-2 border-[rgba(255,229,0,0.1)] overflow-hidden group no-underline';
+          card.style.cssText='opacity:0;transform:translateY(24px);';
+          card.innerHTML=`
+            <div style="aspect-ratio:4/3;position:relative;overflow:hidden;background:${color}20;">
+              ${hasCover
+                ?`<img src="${p.cover_image}" alt="${p.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform .5s ease;" class="group-hover:scale-105"/>`
+                :`<div style="position:absolute;inset:0;background:${color};opacity:0.15;"></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);color:${color};opacity:0.3;letter-spacing:.04em;">${(cat.name||'WORK').toUpperCase()}</span>
+                  </div>`}
+              <div style="position:absolute;top:12px;left:12px;">
+                <span style="font-family:'Space Grotesk',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:${color};background:rgba(10,10,10,.7);padding:4px 10px;border:1px solid ${color}40;">${cat.name||''}</span>
+              </div>
+            </div>
+            <div style="padding:1.5rem;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);color:#FFE500;letter-spacing:.04em;line-height:1.1;">${p.title}</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,229,0,.4);margin-top:.5rem;">${p.client||''} ${p.project_year?'· '+p.project_year:''}</div>
+              <div style="margin-top:1rem;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,229,0,.5);display:flex;align-items:center;gap:6px;">View Case Study <span style="transition:transform .2s ease;" class="group-hover:translate-x-1">→</span></div>
+            </div>`;
+          grid.appendChild(card);
+        });
+        gsap.to('#work-highlight-grid a',{opacity:1,y:0,stagger:.1,duration:.6,ease:'power2.out',scrollTrigger:{trigger:'#work-highlight-grid',start:'top 85%',once:true}});
+      }).catch(()=>{document.getElementById('work-highlight-grid').innerHTML='';});
+    }
+
+    loadWorkHighlight();
   })();
   </script>
 </body>
