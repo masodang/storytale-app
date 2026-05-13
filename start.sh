@@ -2,7 +2,14 @@
 set -e
 
 echo "==> Running migrations..."
-php artisan migrate --force
+if [ "$FRESH_DB" = "1" ]; then
+  echo "==> FRESH_DB=1 detected, dropping and recreating all tables..."
+  php artisan migrate:fresh --force
+  echo "==> Seeding initial data..."
+  php artisan db:seed --class=StoryTaleSeeder --force 2>/dev/null || true
+else
+  php artisan migrate --force
+fi
 
 echo "==> Linking storage..."
 php artisan storage:link 2>/dev/null || true
