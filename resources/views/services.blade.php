@@ -41,6 +41,23 @@
     .sc-list li::before{content:'';width:18px;height:2px;background:currentColor;flex-shrink:0}.service-card:hover .sc-list li{color:rgba(0,0,0,.45)}
     .sc-cta{margin-top:2rem;display:inline-flex;align-items:center;gap:.5rem;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:#FFE500;border:2px solid rgba(255,229,0,.2);padding:8px 18px;text-decoration:none;width:fit-content;transition:color .3s ease,border-color .3s ease}
     .service-card:hover .sc-cta{color:#0A0A0A;border-color:rgba(0,0,0,.3)}
+
+    .wt{position:relative;display:block;overflow:hidden;text-decoration:none;border:2px solid rgba(255,229,0,0.12);}
+    .wt-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 0.55s cubic-bezier(.25,.46,.45,.94),filter 0.55s ease;filter:brightness(0.88);}
+    .wt-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+    .wt-overlay{position:absolute;inset:0;background:rgba(10,10,10,0);transition:background 0.4s ease;}
+    .wt-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;opacity:0;transform:translateY(16px);transition:opacity 0.35s ease,transform 0.35s ease;}
+    .wt-tag{font-family:'Space Grotesk',sans-serif;font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.35em;color:#FFE500;opacity:0.6;margin-bottom:10px;}
+    .wt-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,2.5vw,2.2rem);color:#FFE500;letter-spacing:0.05em;line-height:1.1;}
+    .wt-client{font-family:'Space Grotesk',sans-serif;font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.25em;color:rgba(255,229,0,0.45);margin-top:8px;}
+    .wt-cta{margin-top:16px;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.25em;color:#0A0A0A;background:#FFE500;padding:6px 16px;}
+    .wt-baseline{position:absolute;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(to top,rgba(10,10,10,0.9) 0%,transparent 100%);transition:opacity 0.3s ease;}
+    .wt-baseline-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1rem,1.8vw,1.4rem);color:#FFE500;letter-spacing:0.04em;line-height:1.15;}
+    .wt:hover .wt-img{transform:scale(1.07);filter:brightness(0.3);}
+    .wt:hover .wt-overlay{background:rgba(10,10,10,0.65);}
+    .wt:hover .wt-content{opacity:1;transform:translateY(0);}
+    .wt:hover .wt-baseline{opacity:0;}
+    .wt:hover{border-color:#FFE500;box-shadow:6px 6px 0 #FFE500;}
   </style>
 </head>
 <body>
@@ -68,34 +85,7 @@
     </div>
   </div>
 
-  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-[#FFE500] border-b-4 border-[#0A0A0A]">
-    <div class="bg-[#0A0A0A] text-[#FFE500] overflow-hidden py-1"><div class="flex whitespace-nowrap"><div class="marquee-track flex gap-0 font-body text-xs font-bold tracking-widest uppercase"><span class="px-8">★ Stories That Sell</span><span class="px-8">★ Digital Marketing</span><span class="px-8">★ 8 Disciplines</span><span class="px-8">★ Content × Strategy</span><span class="px-8">★ Stories That Sell</span><span class="px-8">★ Digital Marketing</span><span class="px-8">★ 8 Disciplines</span><span class="px-8">★ Content × Strategy</span></div></div></div>
-    <nav class="max-w-[1440px] mx-auto px-6 lg:px-12 flex items-center justify-between h-[72px]">
-      <a href="/" class="flex items-center gap-2 no-underline"><div class="w-9 h-9 bg-[#0A0A0A] border-2 border-[#0A0A0A] flex items-center justify-center"><span class="text-[#FFE500] font-brutal text-xl leading-none">S</span></div><span class="font-brutal text-2xl tracking-widest text-[#0A0A0A] uppercase leading-none">STORYTALE</span></a>
-      <ul class="hidden lg:flex items-center gap-8 list-none">
-        <li><a href="/work" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Work</a></li>
-        <li><a href="/studio" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Studio</a></li>
-        <li><a href="/services" class="nav-link active font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Services</a></li>
-        <li><a href="/journal" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Journal</a></li>
-      </ul>
-      <div class="hidden lg:flex items-center gap-4">
-        <a id="navbar-wa-link" href="https://wa.me/6281234567890" target="_blank" rel="noopener" class="w-9 h-9 bg-[#25D366] border-2 border-[#0A0A0A] flex items-center justify-center text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 shadow-brutal hover:shadow-none no-underline flex-shrink-0" title="Chat on WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
-        <a href="/#contact" class="inline-block bg-[#0A0A0A] text-[#FFE500] font-body font-bold text-sm uppercase tracking-widest px-6 py-3 border-2 border-[#0A0A0A] shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-150 no-underline">Let's Talk →</a>
-      </div>
-      <button id="burger-btn" class="lg:hidden flex flex-col gap-[6px] p-2 border-2 border-[#0A0A0A] bg-[#FFE500] hover:bg-[#0A0A0A] group transition-colors duration-150 focus:outline-none" aria-label="Toggle menu"><span class="burger-line group-hover:bg-[#FFE500]"></span><span class="burger-line group-hover:bg-[#FFE500]"></span><span class="burger-line group-hover:bg-[#FFE500]"></span></button>
-    </nav>
-    <div id="mobile-nav" class="fixed top-0 right-0 h-screen w-4/5 max-w-sm bg-[#0A0A0A] border-l-4 border-[#FFE500] z-50 flex flex-col p-10 pt-20">
-      <button id="close-nav" class="absolute top-6 right-6 w-10 h-10 border-2 border-[#FFE500] flex items-center justify-center text-[#FFE500] text-xl font-bold hover:bg-[#FFE500] hover:text-[#0A0A0A] transition-colors">✕</button>
-      <ul class="list-none flex flex-col gap-6 mt-4">
-        <li><a href="/work" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Work</a></li>
-        <li><a href="/studio" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Studio</a></li>
-        <li><a href="/services" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-100 no-underline block border-b-2 border-[#FFE500] pb-2">Services</a></li>
-        <li><a href="/journal" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Journal</a></li>
-      </ul>
-      <div class="mt-auto"><a href="/#contact" class="block text-center bg-[#FFE500] text-[#0A0A0A] font-body font-bold text-sm uppercase tracking-widest px-6 py-4 border-2 border-[#FFE500] no-underline">Let's Talk →</a></div>
-    </div>
-    <div id="nav-overlay" class="fixed inset-0 bg-black/50 z-40 hidden opacity-0 transition-opacity duration-300"></div>
-  </header>
+  @include('partials.header')
 
   <!-- HERO -->
   <section id="page-hero" class="relative bg-[#FFE500] border-b-4 border-[#0A0A0A] overflow-hidden" style="padding-top:var(--header-h,100px);">
@@ -164,13 +154,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-[#FFE500] border-t-4 border-[#0A0A0A] py-8">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2"><div class="w-7 h-7 bg-[#0A0A0A] flex items-center justify-center"><span class="font-brutal text-[#FFE500] text-base leading-none">S</span></div><span class="font-brutal text-lg tracking-widest text-[#0A0A0A] uppercase leading-none">STORYTALE</span></div>
-      <span class="font-body text-[10px] font-bold uppercase tracking-widest text-[#0A0A0A] opacity-40">© 2026 Storytale. All rights reserved.</span>
-      <div class="flex items-center gap-6"><a href="/work" class="font-body text-xs font-bold uppercase tracking-widest text-[#0A0A0A] opacity-50 hover:opacity-100 no-underline transition-opacity">Work</a><a href="/services" class="font-body text-xs font-bold uppercase tracking-widest text-[#0A0A0A] no-underline">Services</a><a href="/#contact" class="font-body text-xs font-bold uppercase tracking-widest text-[#0A0A0A] opacity-50 hover:opacity-100 no-underline transition-opacity">Contact</a></div>
-    </div>
-  </footer>
+  @include('partials.footer')
 
   <script>
   (function(){
@@ -234,24 +218,22 @@
           const hasCover=p.cover_image&&p.cover_image.trim();
           const card=document.createElement('a');
           card.href='/work/'+p.slug;
-          card.className='block border-2 border-[rgba(255,229,0,0.1)] overflow-hidden group no-underline';
-          card.style.cssText='opacity:0;transform:translateY(24px);';
+          card.className='wt';
+          card.style.cssText='aspect-ratio:4/3;opacity:0;transform:translateY(24px);';
+          const imgHtml=hasCover
+            ?`<img src="${p.cover_image}" alt="${p.title}" loading="lazy" class="wt-img"/>`
+            :`<div class="wt-placeholder"><span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,4rem);color:rgba(255,229,0,0.06);">${(cat.name||'WORK').toUpperCase()}</span></div>`;
           card.innerHTML=`
-            <div style="aspect-ratio:4/3;position:relative;overflow:hidden;background:${color}20;">
-              ${hasCover
-                ?`<img src="${p.cover_image}" alt="${p.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform .5s ease;" class="group-hover:scale-105"/>`
-                :`<div style="position:absolute;inset:0;background:${color};opacity:0.15;"></div>
-                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-                    <span style="font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);color:${color};opacity:0.3;letter-spacing:.04em;">${(cat.name||'WORK').toUpperCase()}</span>
-                  </div>`}
-              <div style="position:absolute;top:12px;left:12px;">
-                <span style="font-family:'Space Grotesk',sans-serif;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:${color};background:rgba(10,10,10,.7);padding:4px 10px;border:1px solid ${color}40;">${cat.name||''}</span>
-              </div>
+            ${imgHtml}
+            <div class="wt-overlay"></div>
+            <div class="wt-content">
+              ${cat.name?`<div class="wt-tag">${cat.name}</div>`:''}
+              <div class="wt-title">${p.title}</div>
+              ${p.client?`<div class="wt-client">${p.client}</div>`:''}
+              <div class="wt-cta">View Project →</div>
             </div>
-            <div style="padding:1.5rem;">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);color:#FFE500;letter-spacing:.04em;line-height:1.1;">${p.title}</div>
-              <div style="font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,229,0,.4);margin-top:.5rem;">${p.client||''} ${p.project_year?'· '+p.project_year:''}</div>
-              <div style="margin-top:1rem;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,229,0,.5);display:flex;align-items:center;gap:6px;">View Case Study <span style="transition:transform .2s ease;" class="group-hover:translate-x-1">→</span></div>
+            <div class="wt-baseline">
+              <div class="wt-baseline-title">${p.title}</div>
             </div>`;
           grid.appendChild(card);
         });

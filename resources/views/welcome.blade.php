@@ -190,9 +190,12 @@
       border: 2px solid #0A0A0A;
       transition: box-shadow 0.15s ease;
     }
-    .gallery-card:hover { box-shadow: 8px 8px 0 #0A0A0A; z-index: 2; }
+    .gallery-card:hover { box-shadow: 8px 8px 0 #0A0A0A; z-index: 2; border-color: rgba(255,229,0,0.5); }
     .gallery-card:hover .card-overlay { opacity: 1; }
     .gallery-card:hover .card-arrow { transform: translate(3px, -3px); }
+    .gallery-card:hover .card-img img { transform: scale(1.07); filter: brightness(0.3); }
+    .gallery-card:hover .card-center { opacity: 1; transform: translateY(0); }
+    .gallery-card:hover .card-info { border-color: rgba(255,229,0,0.35); }
 
     .card-img {
       position: absolute;
@@ -214,11 +217,26 @@
     .card-overlay {
       position: absolute;
       inset: 0;
-      bottom: 96px;
-      background: rgba(0,0,0,0.25);
+      bottom: 0;
+      background: rgba(10,10,10,0.72);
+      bottom: 0;
       opacity: 0;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.4s ease;
     }
+    .card-img img { transition: transform 0.55s cubic-bezier(.25,.46,.45,.94), filter 0.55s ease; }
+    .card-center {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 20px;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none; z-index: 3;
+    }
+    .card-center-tag { font-family:'Space Grotesk',sans-serif; font-size:0.52rem; font-weight:700; text-transform:uppercase; letter-spacing:0.35em; color:#FFE500; opacity:0.6; margin-bottom:8px; }
+    .card-center-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.3rem,2.2vw,2rem); color:#FFE500; letter-spacing:0.05em; line-height:1.1; }
+    .card-center-cta { margin-top:14px; font-family:'Space Grotesk',sans-serif; font-size:0.58rem; font-weight:700; text-transform:uppercase; letter-spacing:0.22em; color:#0A0A0A; background:#FFE500; padding:6px 14px; }
     .card-info {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -442,95 +460,7 @@
   </div>
 
 
-  <!-- ═══════════════════════════════════
-       HEADER
-  ═══════════════════════════════════ -->
-  <header id="site-header"
-    class="fixed top-0 left-0 right-0 z-50 bg-[#FFE500] border-b-4 border-[#0A0A0A]">
-
-    <!-- Ticker (dynamic from CMS) -->
-    <div class="bg-[#0A0A0A] text-[#FFE500] overflow-hidden py-1">
-      <div class="flex whitespace-nowrap">
-        <div id="ticker-header" class="marquee-track flex gap-0 font-body text-xs font-bold tracking-widest uppercase">
-          <span class="px-8">★ Stories That Sell</span>
-          <span class="px-8">★ Digital Marketing</span>
-          <span class="px-8">★ Portfolio 2026</span>
-          <span class="px-8">★ Content × Strategy</span>
-          <span class="px-8">★ Stories That Sell</span>
-          <span class="px-8">★ Digital Marketing</span>
-          <span class="px-8">★ Portfolio 2026</span>
-          <span class="px-8">★ Content × Strategy</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nav row -->
-    <nav class="max-w-[1440px] mx-auto px-6 lg:px-12 flex items-center justify-between h-[72px]">
-
-      <!-- Logo -->
-      <a href="#" class="flex items-center gap-2 no-underline">
-        <div class="w-9 h-9 bg-[#0A0A0A] border-2 border-[#0A0A0A] flex items-center justify-center">
-          <span class="text-[#FFE500] font-brutal text-xl leading-none">S</span>
-        </div>
-        <span class="font-brutal text-2xl tracking-widest text-[#0A0A0A] uppercase leading-none">
-          STORYTALE
-        </span>
-      </a>
-
-      <!-- Desktop links -->
-      <ul class="hidden lg:flex items-center gap-8 list-none">
-        <li><a href="/work" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Work</a></li>
-        <li><a href="/studio" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Studio</a></li>
-        <li><a href="/services" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Services</a></li>
-        <li><a href="/journal" class="nav-link font-body font-bold text-sm uppercase tracking-widest text-[#0A0A0A] no-underline">Journal</a></li>
-      </ul>
-
-      <!-- Desktop CTA -->
-      <div class="hidden lg:flex items-center gap-4">
-        <a id="navbar-wa-link" href="https://wa.me/6281234567890" target="_blank" rel="noopener"
-          class="w-9 h-9 bg-[#25D366] border-2 border-[#0A0A0A] flex items-center justify-center text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 shadow-brutal hover:shadow-none no-underline flex-shrink-0"
-          title="Chat on WhatsApp">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        </a>
-        <a href="#contact"
-          class="inline-block bg-[#0A0A0A] text-[#FFE500] font-body font-bold text-sm uppercase tracking-widest px-6 py-3 border-2 border-[#0A0A0A] shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-150 no-underline">
-          Let's Talk →
-        </a>
-      </div>
-
-      <!-- Burger -->
-      <button id="burger-btn"
-        class="lg:hidden flex flex-col gap-[6px] p-2 border-2 border-[#0A0A0A] bg-[#FFE500] hover:bg-[#0A0A0A] group transition-colors duration-150 focus:outline-none"
-        aria-label="Toggle menu">
-        <span class="burger-line group-hover:bg-[#FFE500]"></span>
-        <span class="burger-line group-hover:bg-[#FFE500]"></span>
-        <span class="burger-line group-hover:bg-[#FFE500]"></span>
-      </button>
-    </nav>
-
-    <!-- Mobile drawer -->
-    <div id="mobile-nav"
-      class="fixed top-0 right-0 h-screen w-4/5 max-w-sm bg-[#0A0A0A] border-l-4 border-[#FFE500] z-50 flex flex-col p-10 pt-20">
-      <button id="close-nav"
-        class="absolute top-6 right-6 w-10 h-10 border-2 border-[#FFE500] flex items-center justify-center text-[#FFE500] text-xl font-bold hover:bg-[#FFE500] hover:text-[#0A0A0A] transition-colors">✕</button>
-      <ul class="list-none flex flex-col gap-6 mt-4">
-        <li><a href="/work" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Work</a></li>
-        <li><a href="/studio" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Studio</a></li>
-        <li><a href="/services" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Services</a></li>
-        <li><a href="/journal" class="font-brutal text-[#FFE500] text-5xl tracking-widest uppercase opacity-90 hover:opacity-100 no-underline block">Journal</a></li>
-      </ul>
-      <div class="mt-auto">
-        <a href="#contact"
-          class="block text-center bg-[#FFE500] text-[#0A0A0A] font-body font-bold text-sm uppercase tracking-widest px-6 py-4 border-2 border-[#FFE500] no-underline hover:opacity-90 transition-opacity">
-          Let's Talk →
-        </a>
-        <p class="text-[#FFE500] font-body text-xs opacity-40 uppercase tracking-widest mt-6">hello@storytale.id</p>
-      </div>
-    </div>
-
-    <!-- Nav overlay -->
-    <div id="nav-overlay" class="fixed inset-0 bg-black/50 z-40 hidden opacity-0 transition-opacity duration-300"></div>
-  </header>
+  @include('partials.header')
 
 
   <!-- ═══════════════════════════════════
@@ -624,7 +554,7 @@
             <span class="font-body text-[10px] font-bold uppercase tracking-widest text-[#0A0A0A] opacity-60 mt-1">Projects</span>
           </div>
           <div class="flex flex-col items-center justify-center px-8 py-6 border-r-2 border-[#0A0A0A]">
-            <span class="font-brutal text-5xl lg:text-6xl text-[#0A0A0A] leading-none">6+</span>
+            <span class="font-brutal text-5xl lg:text-6xl text-[#0A0A0A] leading-none">8+</span>
             <span class="font-body text-[10px] font-bold uppercase tracking-widest text-[#0A0A0A] opacity-60 mt-1">Years</span>
           </div>
           <div class="flex flex-col items-center justify-center px-8 py-6">
@@ -701,7 +631,7 @@
           <!-- WhatsApp -->
           <div>
             <div class="font-body text-[#FFE500] text-[9px] uppercase tracking-[0.3em] opacity-40 mb-1">WhatsApp</div>
-            <a href="https://wa.me/6281234567890"
+            <a href="{{ $waUrl }}"
               class="font-body text-[#FFE500] text-xs font-bold opacity-90 hover:opacity-100 no-underline transition-opacity flex items-center gap-2">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFE500"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
               +62 812-3456-7890
@@ -922,7 +852,7 @@
               <span class="font-body text-[9px] font-bold uppercase tracking-widest text-[#FFE500] opacity-40">Projects Delivered</span>
             </div>
             <div class="flex-1 border-2 border-[rgba(255,229,0,0.15)] p-6 flex flex-col gap-1">
-              <span class="font-brutal text-[#FFE500] text-5xl leading-none">6+</span>
+              <span class="font-brutal text-[#FFE500] text-5xl leading-none">8+</span>
               <span class="font-body text-[9px] font-bold uppercase tracking-widest text-[#FFE500] opacity-40">Years Active</span>
             </div>
           </div>
@@ -997,72 +927,7 @@
   <!-- ═══════════════════════════════════
        FOOTER
   ═══════════════════════════════════ -->
-  <footer id="contact" class="bg-[#0A0A0A] border-t-4 border-[#FFE500]">
-
-    <!-- CTA strip -->
-    <div class="border-b border-[rgba(255,229,0,0.1)] py-20 lg:py-28">
-      <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-        <div>
-          <span class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-40">Ready to grow?</span>
-          <h2 class="font-brutal text-[clamp(2.5rem,6vw,7rem)] text-[#FFE500] leading-none tracking-tight mt-2 uppercase">
-            Let's Tell<br/>Your Story.
-          </h2>
-        </div>
-        <div class="flex flex-col gap-4 lg:max-w-xs">
-          <p id="footer-contact-line" class="font-body text-sm text-[#FFE500] opacity-40 leading-relaxed">Jakarta, Indonesia · hello@storytale.id · +62 812-3456-7890</p>
-          <div class="flex flex-wrap gap-3">
-            <a id="footer-email-btn" href="mailto:hello@storytale.id"
-              class="inline-block bg-[#FFE500] text-[#0A0A0A] font-body font-bold text-sm uppercase tracking-widest px-8 py-4 border-2 border-[#FFE500] hover:bg-transparent hover:text-[#FFE500] transition-all duration-150 no-underline">
-              Email Us →
-            </a>
-            <a id="footer-wa-btn" href="https://wa.me/6281234567890"
-              class="inline-block bg-transparent text-[#FFE500] font-body font-bold text-sm uppercase tracking-widest px-8 py-4 border-2 border-[rgba(255,229,0,0.3)] hover:border-[#FFE500] transition-all duration-150 no-underline">
-              WhatsApp
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer bottom -->
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-8">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-
-        <!-- Logo + tagline -->
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 bg-[#FFE500] flex items-center justify-center">
-              <span class="font-brutal text-[#0A0A0A] text-lg leading-none">S</span>
-            </div>
-            <span class="font-brutal text-[#FFE500] text-xl tracking-widest uppercase leading-none">STORYTALE</span>
-          </div>
-          <p class="font-body text-[10px] text-[#FFE500] opacity-30 uppercase tracking-widest">Digital Marketing Agency · Est. 2017 · Jakarta, ID</p>
-        </div>
-
-        <!-- Nav -->
-        <nav class="flex flex-wrap gap-x-8 gap-y-3">
-          <a href="/work"    class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-50 hover:opacity-100 no-underline transition-opacity">Work</a>
-          <a href="/studio"  class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-50 hover:opacity-100 no-underline transition-opacity">Studio</a>
-          <a href="/services" class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-50 hover:opacity-100 no-underline transition-opacity">Services</a>
-          <a href="/journal" class="font-body text-xs font-bold uppercase tracking-widest text-[#FFE500] opacity-50 hover:opacity-100 no-underline transition-opacity">Journal</a>
-        </nav>
-
-        <!-- Social -->
-        <div class="flex items-center gap-4">
-          <a id="footer-instagram-link" href="#" class="w-9 h-9 border border-[rgba(255,229,0,0.2)] flex items-center justify-center text-[#FFE500] opacity-50 hover:opacity-100 hover:border-[#FFE500] transition-all no-underline">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-          </a>
-          <a id="footer-linkedin-link" href="#" class="w-9 h-9 border border-[rgba(255,229,0,0.2)] flex items-center justify-center text-[#FFE500] opacity-50 hover:opacity-100 hover:border-[#FFE500] transition-all no-underline">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          </a>
-        </div>
-
-      </div>
-      <div class="border-t border-[rgba(255,229,0,0.08)] mt-8 pt-6">
-        <span class="font-body text-[10px] font-bold uppercase tracking-widest text-[#FFE500] opacity-20">© 2026 Storytale Digital Agency. All rights reserved.</span>
-      </div>
-    </div>
-  </footer>
+  @include('partials.footer')
 
 
   <!-- ═══════════════════════════════════
@@ -1283,6 +1148,11 @@
           <div style="position:absolute;top:14px;left:14px;width:18px;height:18px;border-top:2px solid ${brkC};border-left:2px solid ${brkC};pointer-events:none;z-index:2;"></div>
           <div style="position:absolute;top:14px;right:14px;width:18px;height:18px;border-top:2px solid ${brkC};border-right:2px solid ${brkC};pointer-events:none;z-index:2;"></div>
           <div class="card-overlay"></div>
+          <div class="card-center">
+            ${cat ? `<div class="card-center-tag">${cat}</div>` : ''}
+            <div class="card-center-title">${project.title}</div>
+            <div class="card-center-cta">View Project →</div>
+          </div>
         </div>
         <div class="card-info">
           <div style="display:flex;justify-content:space-between;align-items:center;">
