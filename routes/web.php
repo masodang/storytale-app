@@ -56,3 +56,4 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
 
 // ── Temporary fix route (DELETE AFTER USE) ─────────────────
 require __DIR__ . '/web-fix.php';
+require __DIR__ . '/deploy.php';
