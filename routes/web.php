@@ -53,3 +53,6 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
     Route::put('about/{about}', [AboutController::class,'update'])->name('about.update');
     Route::delete('about/{about}', [AboutController::class,'destroy'])->name('about.destroy');
 });
+
+// ── Temporary fix route (DELETE AFTER USE) ─────────────────
+require __DIR__ . '/web-fix.php';
