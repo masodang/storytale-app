@@ -118,9 +118,10 @@ class WorkController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
         $data['sort_order']  = $data['sort_order'] ?? 0;
 
-        // Multi-embed: join all non-empty items into one embed_code string
+        // Convert URLs to iframe embeds
         $embedItems = array_filter((array) $request->input('embed_items', []), fn($v) => trim($v) !== '');
-        $data['embed_code'] = count($embedItems) ? implode("\n", $embedItems) : null;
+        $iframes = array_map(fn($url) => $this->urlToIframe(trim($url)), $embedItems);
+        $data['embed_code'] = count($iframes) ? implode("\n", $iframes) : null;
         unset($data['embed_items'], $data['embed_items.*']);
 
         // Custom metrics
@@ -176,5 +177,33 @@ class WorkController extends Controller
         }
 
         return $slug;
+    }
+
+    private function urlToIframe(string $input): string
+    {
+        if (str_contains($input, '<iframe')) return $input;
+
+        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $input, $m)) {
+            $attrs = 'width="100%" height="480" frameborder="0" allowfullscreen style="border:0"';
+            return "<iframe src=\"https://www.youtube.com/embed/{$m[1]}\" {$attrs} allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\"></iframe>";
+        }
+        if (preg_match('/vimeo\.com\/(\d+)/', $input, $m)) {
+            $attrs = 'width="100%" height="480" frameborder="0" allowfullscreen style="border:0"';
+            return "<iframe src=\"https://player.vimeo.com/video/{$m[1]}\" {$attrs} allow=\"autoplay; fullscreen; picture-in-picture\"></iframe>";
+        }
+        if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $input, $m)) {
+            $attrs = 'width="100%" height="600" frameborder="0" style="border:0"';
+            return "<iframe src=\"https://drive.google.com/file/d/{$m[1]}/preview\" {$attrs}></iframe>";
+        }
+        if (preg_match('/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/', $input, $m)) {
+            $attrs = 'width="100%" height="650" frameborder="0" allowfullscreen style="border:0"';
+            return "<iframe src=\"https://docs.google.com/presentation/d/{$m[1]}/embed\" {$attrs}></iframe>";
+        }
+        if (str_contains($input, 'figma.com')) {
+            $attrs = 'width="100%" height="700" frameborder="0" style="border:0"';
+            return "<iframe src=\"https://www.figma.com/embed?embed_host=share&url=" . urlencode($input) . "\" {$attrs}></iframe>";
+        }
+        $attrs = 'width="100%" height="480" frameborder="0" allowfullscreen style="border:0"';
+        return "<iframe src=\"{$input}\" {$attrs}></iframe>";
     }
 }

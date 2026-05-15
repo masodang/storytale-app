@@ -16,23 +16,31 @@ class UploadController extends Controller
         $request->validate([
             'file' => $isPdf
                 ? 'required|file|mimes:pdf|max:51200'
-                : 'required|file|mimes:jpg,jpeg,png,gif,webp,svg|max:10240',
+                : 'required|file|mimes:jpg,jpeg,png,gif,webp,svg|max:7168',
         ]);
 
-        $path = $request->file('file')->store('uploads/projects', 'public');
+        $disk = 'webroot';
+        $path = $request->file('file')->store($isPdf ? 'pdf' : 'projects', $disk);
 
-        return response()->json([
-            'url' => asset('storage/' . $path),
-        ]);
+        $fullUrl = Storage::disk($disk)->url($path);
+        $url = parse_url($fullUrl, PHP_URL_PATH) . (parse_url($fullUrl, PHP_URL_QUERY) ? '?' . parse_url($fullUrl, PHP_URL_QUERY) : '');
+
+        return response()->json(['url' => $url]);
     }
 
     public function destroyImage(ProjectImage $image)
     {
         $url = $image->image_url;
 
+        // Try webroot disk
+        if (str_contains($url, '/uploads/')) {
+            $rel = substr($url, strpos($url, '/uploads/') + 9);
+            Storage::disk('webroot')->delete('projects/' . basename($rel));
+        }
+        // Legacy: public disk (storage symlink)
         if (str_contains($url, '/storage/uploads/')) {
-            $relativePath = 'uploads/' . substr($url, strpos($url, '/uploads/') + 9);
-            Storage::disk('public')->delete($relativePath);
+            $rel = 'uploads/' . substr($url, strpos($url, '/uploads/') + 9);
+            Storage::disk('public')->delete($rel);
         }
 
         $image->delete();
