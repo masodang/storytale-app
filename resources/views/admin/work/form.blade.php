@@ -74,14 +74,23 @@
   .gallery-thumb img { width:100%; height:100%; object-fit:cover; }
   .gallery-thumb .remove-btn {
     position: absolute; top: 6px; right: 6px;
-    width: 24px; height: 24px;
-    background: rgba(255,45,45,0.85);
+    width: 26px; height: 26px;
+    background: rgba(255,45,45,0.9);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 14px; line-height: 1;
     color: #fff; border: none; outline: none;
-    opacity: 0.75; transition: opacity 0.15s ease;
+    opacity: 1; transition: background 0.15s ease;
+    z-index: 2;
   }
-  .gallery-thumb .remove-btn:hover { opacity: 1; background: #FF2D2D; }
+  .gallery-thumb .remove-btn:hover { background: #FF2D2D; }
+  .gallery-thumb.img-error { border-color: rgba(255,45,45,0.4); }
+  .gallery-thumb.img-error::after {
+    content: 'File missing'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.6rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em;
+    color: rgba(255,45,45,0.5);
+  }
 
   /* Tag input */
   .tag-pill {
@@ -118,7 +127,7 @@
   @csrf @method($method)
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <div class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
 
     {{-- ═══════════════ LEFT COLUMN ═══════════════ --}}
     <div class="flex flex-col gap-5">
@@ -206,35 +215,45 @@
       {{-- ── Embed Code (multi) ── --}}
       <div class="border-2 border-[rgba(255,229,0,0.1)] p-5">
         <div class="flex items-center justify-between mb-1">
-          <label class="font-body text-[9px] font-bold uppercase tracking-widest text-[#FFE500] opacity-40">Embed Code</label>
+          <label class="font-body text-[9px] font-bold uppercase tracking-widest text-[#FFE500] opacity-40">Embed / Link</label>
           <button type="button" onclick="addEmbed()" class="font-body text-[10px] font-bold uppercase tracking-widest text-[#FFE500] opacity-50 hover:opacity-100 transition-opacity flex items-center gap-1">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add
           </button>
         </div>
-        <p class="font-body text-[10px] text-[#FFE500] opacity-25 mb-4">Paste iframes — YouTube, Vimeo, Google Maps, etc. Multiple embeds supported.</p>
+        <p class="font-body text-[10px] text-[#FFE500] opacity-25 mb-4">Paste link saja — YouTube, Vimeo, Google Drive, atau URL apapun. Sistem otomatis bungkus jadi embed.</p>
         <div id="embed-list" class="flex flex-col gap-3">
-          {{-- seed existing embed_code as first item if it exists --}}
           @if(old('embed_code', $project?->embed_code))
-            @php $existingEmbeds = json_decode(old('embed_items_json','[]'),true) ?: [old('embed_code',$project?->embed_code)] @endphp
-            @foreach($existingEmbeds as $emb)
-              <div class="embed-row flex gap-2">
-                <textarea name="embed_items[]" rows="3"
-                  class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.7)] font-mono text-xs px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors resize-y"
-                  placeholder='<iframe …>'><?= htmlspecialchars($emb) ?></textarea>
-                <button type="button" onclick="this.closest('.embed-row').remove()" class="w-8 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity self-start p-1">✕</button>
+            @php
+              $raw = old('embed_code', $project?->embed_code);
+              // Extract src URLs from existing iframe HTML
+              preg_match_all('/src=["\']([^"\']+)["\']/', $raw, $matches);
+              $existingUrls = $matches[1] ?? [];
+              if (empty($existingUrls)) $existingUrls = [''];
+            @endphp
+            @foreach($existingUrls as $url)
+              <div class="embed-row flex flex-col gap-1">
+                <div class="flex gap-2 items-center">
+                  <span class="embed-badge font-body text-[9px] font-bold uppercase tracking-widest px-2 py-1 min-w-[64px] text-center" style="background:rgba(255,229,0,0.1);color:rgba(255,229,0,0.4);">Link</span>
+                  <input type="text" name="embed_items[]" value="{{ $url }}"
+                    class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.8)] font-body text-sm px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors"
+                    placeholder="https://youtube.com/watch?v=… atau link apapun"
+                    oninput="detectEmbed(this)"/>
+                  <button type="button" onclick="this.closest('.embed-row').remove()" class="w-8 h-9 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity flex items-center justify-center">✕</button>
+                </div>
               </div>
             @endforeach
+          @else
+            <div class="embed-row flex flex-col gap-1">
+              <div class="flex gap-2 items-center">
+                <span class="embed-badge font-body text-[9px] font-bold uppercase tracking-widest px-2 py-1 min-w-[64px] text-center" style="background:rgba(255,229,0,0.1);color:rgba(255,229,0,0.4);">Link</span>
+                <input type="text" name="embed_items[]"
+                  class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.8)] font-body text-sm px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors"
+                  placeholder="https://youtube.com/watch?v=… atau link apapun"
+                  oninput="detectEmbed(this)"/>
+                <button type="button" onclick="this.closest('.embed-row').remove()" class="w-8 h-9 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity flex items-center justify-center">✕</button>
+              </div>
+            </div>
           @endif
-        </div>
-        {{-- always show at least one empty textarea if no existing embeds --}}
-        @if(!old('embed_code', $project?->embed_code))
-          <div class="embed-row flex gap-2">
-            <textarea name="embed_items[]" rows="3"
-              class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.7)] font-mono text-xs px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors resize-y"
-              placeholder='<iframe src="https://www.youtube.com/embed/..." allowfullscreen></iframe>'></textarea>
-            <button type="button" onclick="this.closest('.embed-row').remove()" class="w-8 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity self-start p-1">✕</button>
-          </div>
-        @endif
       </div>
 
       {{-- ── Gallery Images ── --}}
@@ -246,8 +265,8 @@
           <div id="existing-gallery" class="grid grid-cols-3 gap-3 mb-4">
             @foreach($project->images as $img)
               <div class="gallery-thumb" data-id="{{ $img->id }}">
-                <img src="{{ $img->image_url }}" alt="{{ $img->alt_text }}"/>
-                <button type="button" class="remove-btn" onclick="removeExistingImage({{ $img->id }}, this)">✕</button>
+                <img src="{{ $img->image_url }}" alt="{{ $img->alt_text }}" onerror="this.style.display='none';this.closest('.gallery-thumb').classList.add('img-error')"/>
+                <button type="button" class="remove-btn" onclick="removeExistingImage({{ $img->id }}, this)" title="Delete image">✕</button>
               </div>
             @endforeach
           </div>
@@ -312,10 +331,10 @@
 
 
     {{-- ═══════════════ RIGHT COLUMN ═══════════════ --}}
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-5 lg:self-start lg:sticky lg:top-4">
 
       {{-- Publish --}}
-      <div class="border-2 border-[rgba(255,229,0,0.1)] p-5 sticky top-4">
+      <div class="border-2 border-[rgba(255,229,0,0.1)] p-5">
         <p class="font-body text-[9px] font-bold uppercase tracking-widest text-[#FFE500] opacity-40 mb-4">Publish</p>
 
         <div class="mb-4">
@@ -591,7 +610,6 @@ async function removeExistingImage(id, btn) {
   } else {
     thumb.style.opacity = '1';
     btn.disabled = false;
-    alert('Could not delete image. Please try again.');
   }
 }
 
@@ -607,18 +625,52 @@ galleryDrop.addEventListener('drop', async (e) => {
   for (const f of e.dataTransfer.files) await addGalleryFile(f);
 });
 
+// ── Embed URL detection ───────────────────────────────
+const EMBED_PLATFORMS = [
+  { name:'YouTube',     color:'#FF2D2D', test: u => /youtube\.com|youtu\.be/.test(u) },
+  { name:'Vimeo',       color:'#1AB7EA', test: u => /vimeo\.com/.test(u) },
+  { name:'Drive',       color:'#34A853', test: u => /drive\.google\.com/.test(u) },
+  { name:'Slides',      color:'#FBBC04', test: u => /docs\.google\.com\/presentation/.test(u) },
+  { name:'Docs',        color:'#4285F4', test: u => /docs\.google\.com\/document/.test(u) },
+  { name:'Figma',       color:'#A259FF', test: u => /figma\.com/.test(u) },
+  { name:'Maps',        color:'#34A853', test: u => /maps\.google\.com|google\.com\/maps/.test(u) },
+];
+
+function detectEmbed(input) {
+  const url = input.value.trim();
+  const badge = input.closest('.embed-row').querySelector('.embed-badge');
+  const platform = EMBED_PLATFORMS.find(p => p.test(url));
+  if (platform) {
+    badge.textContent = platform.name;
+    badge.style.background = platform.color + '22';
+    badge.style.color = platform.color;
+  } else {
+    badge.textContent = 'Link';
+    badge.style.background = 'rgba(255,229,0,0.1)';
+    badge.style.color = 'rgba(255,229,0,0.4)';
+  }
+}
+
 // ── Multi-embed ───────────────────────────────────────
 function addEmbed() {
   const row = document.createElement('div');
-  row.className = 'embed-row flex gap-2';
+  row.className = 'embed-row flex flex-col gap-1';
   row.innerHTML = `
-    <textarea name="embed_items[]" rows="3"
-      class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.7)] font-mono text-xs px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors resize-y"
-      placeholder='<iframe src="https://www.youtube.com/embed/..." allowfullscreen></iframe>'></textarea>
-    <button type="button" onclick="this.closest('.embed-row').remove()"
-      class="w-8 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity self-start p-1">✕</button>`;
+    <div class="flex gap-2 items-center">
+      <span class="embed-badge font-body text-[9px] font-bold uppercase tracking-widest px-2 py-1 min-w-[64px] text-center" style="background:rgba(255,229,0,0.1);color:rgba(255,229,0,0.4);">Link</span>
+      <input type="text" name="embed_items[]"
+        class="flex-1 bg-[#050505] border-2 border-[rgba(255,229,0,0.15)] text-[rgba(255,229,0,0.8)] font-body text-sm px-3 py-2 focus:outline-none focus:border-[#FFE500] transition-colors"
+        placeholder="https://youtube.com/watch?v=… atau link apapun"
+        oninput="detectEmbed(this)"/>
+      <button type="button" onclick="this.closest('.embed-row').remove()"
+        class="w-8 h-9 flex-shrink-0 border-2 border-[rgba(255,45,45,0.3)] text-[#FF2D2D] opacity-50 hover:opacity-100 transition-opacity flex items-center justify-center">✕</button>
+    </div>`;
   document.getElementById('embed-list').appendChild(row);
+  row.querySelector('input').focus();
 }
+
+// detect on page load for existing values
+document.querySelectorAll('#embed-list input[name="embed_items[]"]').forEach(detectEmbed);
 
 // ── Metrics ───────────────────────────────────────────
 function addMetric() {
